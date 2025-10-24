@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # 1. 查看可用模型
-curl -s --noproxy '*' http://127.0.0.1:13337/v1/models | jq .
+curl -s --noproxy '*' http://127.0.0.1:13311/v1/models | jq .
 
 # 2. 走 chat/completions 生成文本
-curl -s --noproxy '*' http://127.0.0.1:13337/v1/chat/completions \
+curl -s --noproxy '*' http://127.0.0.1:13311/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Qwen/Qwen3-1.7B",

@@ -5,4 +5,4 @@ http_proxy= https_proxy= no_proxy=* python3 -m vllm.entrypoints.openai.api_serve
   --gpu-memory-utilization 0.95 \
   --max-num-batched-tokens 8192 \
   --max-num-seqs 256 \
-  --port "13337" \
+  --port "13311" \
