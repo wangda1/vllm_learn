@@ -6,7 +6,7 @@ import uuid
 
 
 # -----------------------------
-# 客户端（Client） - 使用 DEALER
+# 客户端（Client） - 使用 DEALER，作为client
 # -----------------------------
 def client(client_id):
     context = zmq.Context.instance()
@@ -45,7 +45,7 @@ def client(client_id):
 
 
 # -----------------------------
-# 推理引擎（Engine） - 使用 ROUTER
+# 推理引擎（Engine） - 使用 ROUTER，作为server
 # -----------------------------
 def engine():
     context = zmq.Context.instance()
