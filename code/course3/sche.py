@@ -2,6 +2,7 @@ import random
 random.seed(42)
 
 BLOCK_SIZE = 4
+# Q3: token_budget 在这里的作用是什么？为什么会有个总体维度的token_budget
 TOKEN_BUDGET = 10
 MAX_BLOCKS = 16          # 模拟 GPU 显存上限
 
@@ -9,7 +10,7 @@ MAX_BLOCKS = 16          # 模拟 GPU 显存上限
 # ------------------ 基本数据结构 ------------------
 class Request:
     _id_counter = 0
-
+    # Q1: decode_tokens 是怎么计算得到的，为什么会需要这个值？
     def __init__(self, prompt_tokens: int, decode_tokens: int = 8):
         Request._id_counter += 1
         self.request_id = f"req-{Request._id_counter}"
@@ -18,6 +19,7 @@ class Request:
         self.num_computed_tokens = 0                 # 已算过的 token
         self.status = "WAITING"                      # WAITING / RUNNING / DONE
 
+    # __repr__ 方法用于打印 Request 对象的状态，方便调试和观察调度过程。print(p) → 先找 __str__，没有就用 __repr__
     def __repr__(self):
         return (f"{self.request_id}({self.status}, "
                 f"computed={self.num_computed_tokens}/{self.prompt_len}, "
@@ -70,6 +72,7 @@ class Scheduler:
 
     def _try_schedule_one(self, req: Request, token_budget: int) -> int | None:
         """返回实际可调度 token 数，若资源不足返回 None"""
+        # Q4: 这里的计算为什么是 min 它俩
         need = min(req.prompt_len - req.num_computed_tokens, token_budget)
         if need == 0:
             return 0
@@ -91,9 +94,11 @@ class Scheduler:
                 break
             # decode 阶段每次算 1 个 token
             need = 1
+            # 申请block，若不足则抢占自己
             blocks = self.kv_mgr._alloc_blocks(need)
             if blocks is None:
                 # 抢占自己
+                # Q2: 抢占自己的细节没有展示，是如何进行抢占的？抢占后状态如何变化？
                 preempted.append(req)
                 self.running.remove(req)
                 continue
@@ -109,7 +114,7 @@ class Scheduler:
             req = self.waiting[0]
             need = self._try_schedule_one(req, token_budget)
             if need is None:
-                # 资源不足，抢占 running 末尾
+                # 资源不足，抢占 running 末尾，等于全清空，重新计算
                 if not self.running:
                     break
                 victim = self.running.pop()
